@@ -7,6 +7,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public event Action<eStateGame> StateChangedAction = delegate { };
+    public eLevelMode currentMode;
 
     public enum eLevelMode
     {
@@ -81,8 +82,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ReloadCurrentLevel()
+    {
+        ClearLevel();
+        LoadLevel(currentMode);
+    }
+
     public void LoadLevel(eLevelMode mode)
     {
+        currentMode = mode;
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
 

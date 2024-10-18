@@ -24,6 +24,11 @@ public class UIMainManager : MonoBehaviour
         }
     }
 
+    public void Restart()
+    {
+        m_gameManager.ReloadCurrentLevel();
+    }
+
     internal void ShowMainMenu()
     {
         m_gameManager.ClearLevel();
