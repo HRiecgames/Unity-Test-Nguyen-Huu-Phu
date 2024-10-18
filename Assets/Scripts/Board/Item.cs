@@ -11,6 +11,11 @@ public class Item
 
     public Transform View { get; private set; }
 
+    public virtual NormalItem.eNormalType GetItemType()
+    {
+        return NormalItem.eNormalType.NONE;
+    }
+
 
     public virtual void SetView(ItemViewCollection collection)
     {

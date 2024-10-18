@@ -2,8 +2,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Pool;
+using Random = UnityEngine.Random;
 
 public class Board
 {
@@ -88,6 +91,7 @@ public class Board
                 NormalItem item = new NormalItem();
 
                 List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+                types.Add(NormalItem.eNormalType.NONE);
                 if (cell.NeighbourBottom != null)
                 {
                     NormalItem nitem = cell.NeighbourBottom.Item as NormalItem;
@@ -144,6 +148,7 @@ public class Board
 
     internal void FillGapsWithNewItems()
     {
+        var leastColor = FindLeastAmountItem();
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
@@ -152,8 +157,17 @@ public class Board
                 if (!cell.IsEmpty) continue;
 
                 NormalItem item = new NormalItem();
+                item.SetType(leastColor);
+                cell.Assign(item);
 
-                item.SetType(Utils.GetRandomNormalType());
+                while (!cell.IsDistinceFrom4Around())
+                {
+                    int rand = Random.Range(0, 7);
+                    var color = (NormalItem.eNormalType)rand;
+                    item.SetType(color);
+                    cell.Assign(item);
+                }
+
                 item.SetView(itemViewCollection);
                 item.SetViewRoot(m_root);
 
@@ -172,6 +186,53 @@ public class Board
                 Cell cell = m_cells[x, y];
                 cell.ExplodeItem();
             }
+        }
+    }
+
+    public NormalItem.eNormalType FindLeastAmountItem()
+    {
+        HashSet<NormalItem.eNormalType> checkItemColor = new();
+        using(DictionaryPool<NormalItem.eNormalType, int>.Get(out var itemCollection))
+        {
+            for (int x = 0; x < boardSizeX; x++)
+            {
+                for (int y = 0; y < boardSizeY; y++)
+                {
+                    Cell cell = m_cells[x, y];
+                    NormalItem.eNormalType color = cell.GetItemType();
+                    if (color == NormalItem.eNormalType.NONE)
+                        continue;
+
+                    if (checkItemColor.Contains(color))
+                        continue;
+
+                    if (itemCollection.ContainsKey(color))
+                    {
+                        int count = itemCollection[color];
+                        count = count + 1;
+                        itemCollection[color] = count;
+                    }
+
+                    else
+                    {
+                        itemCollection.Add(color, 1);
+                    }
+                }
+            }
+
+            int minCount = int.MaxValue;
+            NormalItem.eNormalType leastColor = NormalItem.eNormalType.NONE;
+            foreach (var item in itemCollection)
+            {
+                if(item.Value < minCount)
+                {
+                    minCount = item.Value;
+                    leastColor = item.Key;
+                }
+            }
+
+            checkItemColor.Clear();
+            return leastColor;
         }
     }
 

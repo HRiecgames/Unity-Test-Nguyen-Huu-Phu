@@ -28,6 +28,28 @@ public class Cell : MonoBehaviour
         CellCollider.enabled = true;
     }
 
+    public NormalItem.eNormalType GetItemType()
+    {
+        return IsEmpty ? NormalItem.eNormalType.NONE : Item.GetItemType();
+    }
+
+    public bool IsDistinceFrom4Around()
+    {
+        if (NeighbourUp != null && IsSameType(NeighbourUp))
+            return false;
+
+        if (NeighbourBottom != null && IsSameType(NeighbourBottom))
+            return false;
+
+        if (NeighbourLeft != null && IsSameType(NeighbourLeft))
+            return false;
+
+        if (NeighbourRight != null && IsSameType(NeighbourRight))
+            return false;
+
+        return true;
+    }
+
     public void Setup(int cellX, int cellY)
     {
         this.BoardX = cellX;
