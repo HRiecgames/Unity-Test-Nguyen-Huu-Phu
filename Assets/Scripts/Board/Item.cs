@@ -17,13 +17,12 @@ public class Item
     }
 
 
-    public virtual void SetView(ItemViewCollection collection)
+    public virtual void SetView(ItemViewCollection collection, ItemView prefab)
     {
         string prefabname = GetPrefabName();
 
         if (!string.IsNullOrEmpty(prefabname))
         {
-            ItemView prefab = Resources.Load<ItemView>("prefabs/itemNormal");
             if (prefab)
             {
                 Sprite sprite = collection.GetSpriteByName(prefabname);

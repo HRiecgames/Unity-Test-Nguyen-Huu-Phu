@@ -29,6 +29,7 @@ public class Board
     private int m_matchMin;
 
     private ItemViewCollection itemViewCollection;
+    private ItemView itemView;
 
     public Board(Transform transform, GameSettings gameSettings)
     {
@@ -40,6 +41,7 @@ public class Board
         this.boardSizeY = gameSettings.BoardSizeY;
 
         m_cells = new Cell[boardSizeX, boardSizeY];
+        itemView = Resources.Load<ItemView>("prefabs/itemNormal");
         itemViewCollection = Resources.Load<ItemViewCollection>("Item View Collection");
         itemViewCollection.Initialize();
 
@@ -111,7 +113,7 @@ public class Board
                 }
 
                 item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()));
-                item.SetView(itemViewCollection);
+                item.SetView(itemViewCollection, itemView);
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
@@ -168,7 +170,7 @@ public class Board
                     cell.Assign(item);
                 }
 
-                item.SetView(itemViewCollection);
+                item.SetView(itemViewCollection, itemView);
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
@@ -349,7 +351,7 @@ public class Board
                 cellToConvert = matches[rnd];
             }
 
-            item.SetView(itemViewCollection);
+            item.SetView(itemViewCollection, itemView);
             item.SetViewRoot(m_root);
 
             cellToConvert.Free();
