@@ -12,17 +12,19 @@ public class Item
     public Transform View { get; private set; }
 
 
-    public virtual void SetView()
+    public virtual void SetView(ItemViewCollection collection)
     {
         string prefabname = GetPrefabName();
 
         if (!string.IsNullOrEmpty(prefabname))
         {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
+            ItemView prefab = Resources.Load<ItemView>("prefabs/itemNormal");
             if (prefab)
             {
+                Sprite sprite = collection.GetSpriteByName(prefabname);
                 //View = GameObject.Instantiate(prefab).transform;
                 View = SimplePool.Spawn(prefab).transform;
+                View.GetComponent<ItemView>().SetSprite(sprite);
                 View.transform.localScale = Vector3.one; // Reset to original scale
             }
         }

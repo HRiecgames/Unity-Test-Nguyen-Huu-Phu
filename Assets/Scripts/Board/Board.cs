@@ -25,6 +25,8 @@ public class Board
 
     private int m_matchMin;
 
+    private ItemViewCollection itemViewCollection;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
         m_root = transform;
@@ -35,6 +37,8 @@ public class Board
         this.boardSizeY = gameSettings.BoardSizeY;
 
         m_cells = new Cell[boardSizeX, boardSizeY];
+        itemViewCollection = Resources.Load<ItemViewCollection>("Item View Collection");
+        itemViewCollection.Initialize();
 
         CreateBoard();
     }
@@ -103,7 +107,7 @@ public class Board
                 }
 
                 item.SetType(Utils.GetRandomNormalTypeExcept(types.ToArray()));
-                item.SetView();
+                item.SetView(itemViewCollection);
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
@@ -150,7 +154,7 @@ public class Board
                 NormalItem item = new NormalItem();
 
                 item.SetType(Utils.GetRandomNormalType());
-                item.SetView();
+                item.SetView(itemViewCollection);
                 item.SetViewRoot(m_root);
 
                 cell.Assign(item);
@@ -284,7 +288,7 @@ public class Board
                 cellToConvert = matches[rnd];
             }
 
-            item.SetView();
+            item.SetView(itemViewCollection);
             item.SetViewRoot(m_root);
 
             cellToConvert.Free();
