@@ -31,6 +31,9 @@ public class BoardController : MonoBehaviour
 
     private bool m_gameOver;
 
+    private YieldInstruction waitForShiftDown = new WaitForSeconds(0.2f);
+    private YieldInstruction waitForShuffle = new WaitForSeconds(0.3f);
+
     public void StartGame(GameManager gameManager, GameSettings gameSettings)
     {
         m_gameManager = gameManager;
@@ -109,18 +112,19 @@ public class BoardController : MonoBehaviour
                 {
                     StopHints();
 
-                    Cell c1 = m_hitCollider.GetComponent<Cell>();
-                    Cell c2 = hit.collider.GetComponent<Cell>();
-                    if (AreItemsNeighbor(c1, c2))
+                    if (m_hitCollider.TryGetComponent<Cell>(out var c1) && hit.collider.TryGetComponent<Cell>(out var c2))
                     {
-                        IsBusy = true;
-                        SetSortingLayer(c1, c2);
-                        m_board.Swap(c1, c2, () =>
+                        if (AreItemsNeighbor(c1, c2))
                         {
-                            FindMatchesAndCollapse(c1, c2);
-                        });
+                            IsBusy = true;
+                            SetSortingLayer(c1, c2);
+                            m_board.Swap(c1, c2, () =>
+                            {
+                                FindMatchesAndCollapse(c1, c2);
+                            });
 
-                        ResetRayCast();
+                            ResetRayCast();
+                        }
                     }
                 }
             }
@@ -236,11 +240,11 @@ public class BoardController : MonoBehaviour
     {
         m_board.ShiftDownItems();
 
-        yield return new WaitForSeconds(0.2f);
+        yield return waitForShiftDown;
 
         m_board.FillGapsWithNewItems();
 
-        yield return new WaitForSeconds(0.2f);
+        yield return waitForShiftDown;
 
         FindMatchesAndCollapse();
     }
@@ -249,11 +253,11 @@ public class BoardController : MonoBehaviour
     {
         m_board.ExplodeAllItems();
 
-        yield return new WaitForSeconds(0.2f);
+        yield return waitForShiftDown;
 
         m_board.Fill();
 
-        yield return new WaitForSeconds(0.2f);
+        yield return waitForShiftDown;
 
         FindMatchesAndCollapse();
     }
@@ -262,7 +266,7 @@ public class BoardController : MonoBehaviour
     {
         m_board.Shuffle();
 
-        yield return new WaitForSeconds(0.3f);
+        yield return waitForShuffle;
 
         FindMatchesAndCollapse();
     }
@@ -282,6 +286,7 @@ public class BoardController : MonoBehaviour
     internal void Clear()
     {
         m_board.Clear();
+        m_gameManager.StateChangedAction -= OnGameStateChange;
     }
 
     private void ShowHint()

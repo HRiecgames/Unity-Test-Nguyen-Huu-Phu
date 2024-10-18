@@ -1,8 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider2D))]
 public class Cell : MonoBehaviour
 {
+    public BoxCollider2D CellCollider;
+
     public int BoardX { get; private set; }
 
     public int BoardY { get; private set; }
@@ -19,6 +22,11 @@ public class Cell : MonoBehaviour
 
 
     public bool IsEmpty => Item == null;
+
+    private void OnEnable()
+    {
+        CellCollider.enabled = true;
+    }
 
     public void Setup(int cellX, int cellY)
     {
@@ -58,6 +66,7 @@ public class Cell : MonoBehaviour
     {
         if (Item != null)
         {
+            StopHintAnimation();
             Item.Clear();
             Item = null;
         }
@@ -72,6 +81,7 @@ public class Cell : MonoBehaviour
     {
         if (Item == null) return;
 
+        StopHintAnimation();
         Item.ExplodeView();
         Item = null;
     }
@@ -90,4 +100,11 @@ public class Cell : MonoBehaviour
     {
         Item.AnimationMoveToPosition();
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        CellCollider ??= GetComponent<BoxCollider2D>();   
+    }
+#endif
 }

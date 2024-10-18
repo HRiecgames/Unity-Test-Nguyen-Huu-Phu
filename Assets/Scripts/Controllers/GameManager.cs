@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
     private UIMainManager m_uiMenu;
 
     private LevelCondition m_levelCondition;
+    private YieldInstruction waitForEndOfFrame = new WaitForEndOfFrame();
+    private YieldInstruction waitForEndGame = new WaitForSeconds(1);
 
     private void Awake()
     {
@@ -129,10 +131,10 @@ public class GameManager : MonoBehaviour
     {
         while (m_boardController.IsBusy)
         {
-            yield return new WaitForEndOfFrame();
+            yield return waitForEndOfFrame;
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return waitForEndGame;
 
         State = eStateGame.GAME_OVER;
 

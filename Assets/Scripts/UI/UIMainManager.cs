@@ -27,6 +27,7 @@ public class UIMainManager : MonoBehaviour
     public void Restart()
     {
         m_gameManager.ReloadCurrentLevel();
+        m_gameManager.StateChangedAction -= OnGameStateChange;
     }
 
     internal void ShowMainMenu()

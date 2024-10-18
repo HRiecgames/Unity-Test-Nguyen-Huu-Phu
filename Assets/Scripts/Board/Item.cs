@@ -21,7 +21,9 @@ public class Item
             GameObject prefab = Resources.Load<GameObject>(prefabname);
             if (prefab)
             {
-                View = GameObject.Instantiate(prefab).transform;
+                //View = GameObject.Instantiate(prefab).transform;
+                View = SimplePool.Spawn(prefab).transform;
+                View.transform.localScale = Vector3.one; // Reset to original scale
             }
         }
     }
@@ -60,8 +62,7 @@ public class Item
     {
         if (View == null) return;
 
-        SpriteRenderer sp = View.GetComponent<SpriteRenderer>();
-        if (sp)
+        if (View.TryGetComponent<SpriteRenderer>(out var sp))
         {
             sp.sortingOrder = 1;
         }
@@ -72,8 +73,7 @@ public class Item
     {
         if (View == null) return;
 
-        SpriteRenderer sp = View.GetComponent<SpriteRenderer>();
-        if (sp)
+        if (View.TryGetComponent<SpriteRenderer>(out var sp))
         {
             sp.sortingOrder = 0;
         }
@@ -101,7 +101,9 @@ public class Item
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
-                    GameObject.Destroy(View.gameObject);
+                    //GameObject.Destroy(View.gameObject);
+                    View.SetParent(CellContainer.Transform);
+                    SimplePool.Despawn(View.gameObject);
                     View = null;
                 }
                 );
@@ -132,7 +134,9 @@ public class Item
 
         if (View)
         {
-            GameObject.Destroy(View.gameObject);
+            //GameObject.Destroy(View.gameObject);
+            View.SetParent(CellContainer.Transform);
+            SimplePool.Despawn(View.gameObject);
             View = null;
         }
     }
